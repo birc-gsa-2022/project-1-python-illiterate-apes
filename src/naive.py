@@ -6,17 +6,18 @@ import fastq
 
 def naive(read, genome):
     length = len(read[1])
-    current_match_length = 0
     out = []
-    for i in range(len(genome[1]) - len(read[1])):
+    for i in range(len(genome[1]) - len(read[1]) + 1):
+        current_match_length = 0
         for j in range(len(read[1])):
-            if genome[1][i] == read[1][j]:
+            if genome[1][i + j] == read[1][j]:
                 current_match_length += 1
             else:
                 current_match_length = 0
+                break
             
             if current_match_length == length:
-                out.append(f"{read[0]}\t{genome[0]}\t{i - length}\t{length}M\t{read[1]}")
+                out.append(f"{read[0]}\t{genome[0]}\t{i + 1}\t{length}M\t{read[1]}")
     return out
 
         
@@ -31,7 +32,7 @@ def main():
     reads = fastq.fastq_parser(args.reads)
 
     result = []
-    for r in reads:
+    for r in reads: 
         for g in genomes:
             result.append(naive(r, g))
     
