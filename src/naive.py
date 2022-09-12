@@ -35,8 +35,10 @@ def main():
         for g in genomes:
             result.append(naive(r, g))
     
-    for l in result:
-        print(l)
+    for list in result:
+        for line in list:
+            if (line):
+                print(line)
     
 
 
