@@ -71,6 +71,8 @@ def generate_different(chainLength, alphabet):
         prevChar = selectedChar
     return output
 
+# Fibonacci random
+
 def generate_chains(name, nChains, minLength, maxLength, alphabet):
     output = ""
     for i in range(nChains):
