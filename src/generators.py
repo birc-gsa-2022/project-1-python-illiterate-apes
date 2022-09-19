@@ -111,8 +111,8 @@ def find_border(chain):
     for c in enumerate(chain[1:]):
         if c == chain[borderPos]:
             borderPos += 1
-        # elif c == chain[0]:
-        #     borderPos = 1
+        elif c == chain[0]:
+             borderPos = 1
         else:
             borderPos = 0
     
