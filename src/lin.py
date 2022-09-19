@@ -37,7 +37,7 @@ def linear(read, genome):
             i += 1
 
         if i == m:
-            out.append(f"{read[0]}\t{genome[0]}\t{j - m}\t{m}M\t{read[1]}")
+            out.append(f"{read[0]}\t{genome[0]}\t{j - m + 1}\t{m}M\t{read[1]}")
 
         if i == 0:
             j += 1
