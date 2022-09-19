@@ -1,6 +1,4 @@
-from itertools import chain
 import random
-import pickle
 from unittest.util import _MAX_LENGTH
 
 def generate_random_sequence(chainLength, alphabet):
@@ -14,15 +12,16 @@ def generate_random_sequence(chainLength, alphabet):
     output = "".join(random.choice(alphabet) for _ in range(chainLength))
     return output
 
-def generate_same_before(chainLength, alphabet, prob):
+def generate_same_before(chainLength, alphabet):
     """
     Returns a string of length='chainLength' made up from random characters from 'alphabet'
     For every character a random float between 0 and 1 is chosen: if it's lower than prob
     the character used for generating the previous character is used
     chainLength: Expects an integer > 0 to determine the length of the string output
     alphabet: A Python list containing all valid characters
-    prob: A probability between 0 and 1
+    prob: 0.3
     """
+    prob = 0.3
     output = ""
     selectedChar = random.choice(alphabet)
     for i in range(chainLength):
@@ -31,7 +30,7 @@ def generate_same_before(chainLength, alphabet, prob):
         output += selectedChar
     return output
 
-def generate_multiple(chainLength, alphabet, prob, minStrike, maxStrike):
+def generate_multiple(chainLength, alphabet):
     """
     Returns a string of length='chainLength' made up from random characters from 'alphabet'
     For every character a random float between 0 and 1 is chosen: if it's lower than prob
@@ -39,10 +38,13 @@ def generate_multiple(chainLength, alphabet, prob, minStrike, maxStrike):
     (included)
     chainLength: Expects an integer > 0 to determine the length of the string output
     alphabet: A Python list containing all valid characters
-    prob: A probability between 0 and 1
-    minStrike: The minimum amount of characters that will appear in a strike
-    maxStrike: The maximum amount of characters that will appear in a strike
+    prob: A probability between 0 and 1 (0.2)
+    minStrike: The minimum amount of characters that will appear in a strike (3)
+    maxStrike: The maximum amount of characters that will appear in a strike (100)
     """
+    prob = 0.2
+    minStrike = 3
+    maxStrike = 100
     output = ""
     for i in range(chainLength):
         selectedChar = random.choice(alphabet)
@@ -88,83 +90,119 @@ def generate_fibonacci(chainLength, alphabet):
     while len(b)<chainLength:
         a, b = b, a + b
     return b[:chainLength]
+
+def randomRange(min, max):
+    if min >= max:
+        return min
+    else:
+        return random.choice(range(min,max))
+
+def generate_chains(nChains, alphabet, method, minLength, maxLength):
+    chains = []
     
-
-
-def generate_chains(name, nChains, minLength, maxLength, alphabet):
-    output = ""
     for i in range(nChains):
-        chainLength = random.choice(range(minLength, maxLength+1))
-        output += name+str(i+1)+"\n"
-        output += generate_different(chainLength, alphabet)
-        output += "\n"
-    return output
+        length = randomRange(minLength, maxLength)
+        chains.append(method(length, alphabet))
+    
+    return chains
 
-def generate_fasta():
+def find_border(chain):
+    borderPos = 0
+    for c in enumerate(chain[1:]):
+        if c == chain[borderPos]:
+            borderPos += 1
+        # elif c == chain[0]:
+        #     borderPos = 1
+        else:
+            borderPos = 0
+    
+    return borderPos
+
+def __adapt_chain__(chain, pattern, min_matches, max_matches):
+    borderPos = len(pattern)-find_border(pattern)
+
+    if len(pattern)*max_matches > len(chain):
+        max_matches = len(chain)//len(pattern)
+
+    n_matches = randomRange(min_matches, max_matches)
+
+
+
+
+def adapt_chains(chains, patterns, min_matches, max_matches):
+    if isinstance(chains, list):
+        for chain, pattern in chains, patterns:
+            __adapt_chain__(chain, pattern, min_matches, max_matches)
+    else:
+        __adapt_chain__(chains, patterns, min_matches, max_matches)
+    
+    return chains
+
+
+def output_chains(name, startIndex, file, chains):
+    if isinstance(chains, list):
+        for i, chain in enumerate(chains):
+            file.write(name+str(i+1+startIndex)+'\n')
+            file.write(chain+'\n')
+        return len(chains)
+    else:
+        file.write(name+str(1+startIndex)+'\n')
+        file.write(chains+'\n')
+        return 1
+
+
+def generate_test():
     ALPHABET = ['a', 'c', 'g', 't']
+    GENERATION_METHODS = [generate_random_sequence, generate_same_before, generate_multiple, generate_different, generate_fibonacci]
+    CHAINS_PER_TYPE = 5
 
-    NAME = "> chr"
-    MIN_LENGTH = 10**3
-    MAX_LENGTH = 10**4
+    # Set seed
+    random.seed(0)
 
-    f = open('fasta.txt', 'w')
+    fastqChains = []
+    if True:
+        NAME_FASTQ = "@read"
+
+        MIN_FASTQ_LENGTH = 3
+        MAX_FASTQ_LENGTH = 200
+
+        for i in range(10):
+            fastqChains.extend(generate_chains(1, ALPHABET, generate_random_sequence, i, i))
+
+        # Generate fastq patterns
+        for gen in GENERATION_METHODS:
+            fastqChains.extend(generate_chains(CHAINS_PER_TYPE, ALPHABET, gen, MIN_FASTQ_LENGTH, MAX_FASTQ_LENGTH))
+
+        fastq_file = open('fastq.txt', 'w')
+        output_chains(NAME_FASTQ, 0, fastq_file, fastqChains)
+        fastq_file.close()
+
+    NAME_FASTA = "> chr"
+
+    MIN_FASTA_LENGTH = 2*10**3
+    MAX_FASTA_LENGTH = 10**4
+
+    MIN_MATCHES = 0
+    MAX_MATCHES = 10
+
+    fasta_file = open('fasta.txt', 'w')
+
+    fasta_index = 0
+
+    for i in range(10):
+        fastaChain = generate_chains(1, ALPHABET, generate_random_sequence, i, i)[0]
+        fastaChain = adapt_chains(fastaChain, fastqChains[fasta_index], MIN_MATCHES, MAX_MATCHES)
+        fasta_index += output_chains(NAME_FASTA, fasta_index, fasta_file, fastaChain)
 
     # Random chains
-    N_CHAINS = 15
+    for gen in GENERATION_METHODS:
+        fastaChains = generate_chains(CHAINS_PER_TYPE, ALPHABET, gen, MIN_FASTA_LENGTH, MAX_FASTA_LENGTH)
+        fasta_index += output_chains(NAME_FASTA, fasta_index, fasta_file, fastaChains)
 
-    for i in range(N_CHAINS):
-        chainLength = random.choice(range(MIN_LENGTH, MAX_LENGTH+1))
-        f.write(NAME+str(i+1)+'\n')
-        f.write(generate_different(chainLength, ALPHABET)+'\n')
-    
-    chainsGenerated = N_CHAINS
-    # Same as before chains
-    N_CHAINS = 10
-
-    for i in range(N_CHAINS):
-        chainLength = random.choice(range(MIN_LENGTH, MAX_LENGTH+1))
-        f.write(NAME+str(chainsGenerated+i+1)+'\n')
-        f.write(generate_same_before(chainLength, ALPHABET, 0.3)+'\n')
-    
-    chainsGenerated = N_CHAINS
-    # Strike chains
-    N_CHAINS = 20
-
-    for i in range(N_CHAINS):
-        chainLength = random.choice(range(MIN_LENGTH, MAX_LENGTH+1))
-        f.write(NAME+str(chainsGenerated+i+1)+'\n')
-        f.write(generate_multiple(chainLength, ALPHABET, 0.5, 5, 1000)+'\n')
-    
-    chainsGenerated = N_CHAINS
-    # Different chains
-    N_CHAINS = 15
-
-    for i in range(N_CHAINS):
-        chainLength = random.choice(range(MIN_LENGTH, MAX_LENGTH+1))
-        f.write(NAME+str(chainsGenerated+i+1)+'\n')
-        f.write(generate_different(chainLength, ALPHABET)+'\n')
-    
-    chainsGenerated = N_CHAINS
-    # Fibonacci chains
-    N_CHAINS = 20
-
-    for i in range(N_CHAINS):
-        chainLength = random.choice(range(MIN_LENGTH, MAX_LENGTH+1))
-        f.write(NAME+str(chainsGenerated+i+1)+'\n')
-        f.write(generate_fibonacci(chainLength, ALPHABET)+'\n')
-    
-    f.close()
-
-
-#def generate_fasta(nChains, minLength, maxLength, alphabet):
-#    return generate_chains("> chr", nChains, minLength, maxLength, alphabet)
-
-#def generate_fastq(nChains, minLength, maxLength, alphabet):
-#    return generate_chains("@read", nChains, minLength, maxLength, alphabet)
+    fasta_file.close()
 
 def main():
-    generate_fasta()
-    #print(generate_fastq(10, 10, 20, ['a','c','g','t']))
+    generate_test()
 
 if __name__=='__main__':
     main()
