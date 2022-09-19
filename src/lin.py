@@ -53,8 +53,6 @@ def main():
     argparser.add_argument("genome", type=argparse.FileType('r'))
     argparser.add_argument("reads", type=argparse.FileType('r'))
     args = argparser.parse_args()
-    print(f"Find every reads in {args.reads.name} " +
-          f"in genome {args.genome.name}")
     genomes = fasta.fasta_parse(args.genome)
     reads = fastq.fastq_parser(args.reads)
 
