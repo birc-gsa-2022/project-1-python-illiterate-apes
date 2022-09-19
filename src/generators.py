@@ -151,6 +151,10 @@ def output_chains(name, startIndex, file, chains):
         return 1
 
 
+def generate_sam(file, chain, patterns):
+    # TODO: generate the sam format. You expect to receive only a chain and a set of patterns in a list. You have to write it on the file using the function 'file.write()'
+    pass
+
 def generate_test():
     ALPHABET = ['a', 'c', 'g', 't']
     GENERATION_METHODS = [generate_random_sequence, generate_same_before, generate_multiple, generate_different, generate_fibonacci]
@@ -186,17 +190,20 @@ def generate_test():
     MAX_MATCHES = 10
 
     fasta_file = open('fasta.txt', 'w')
+    sam_file = open('sam.txt', 'w')
 
     fasta_index = 0
 
     for i in range(10):
         fastaChain = generate_chains(1, ALPHABET, generate_random_sequence, i, i)[0]
         fastaChain = adapt_chains(fastaChain, fastqChains[fasta_index], MIN_MATCHES, MAX_MATCHES)
+        generate_sam(sam_file, fastaChain, fastqChains)
         fasta_index += output_chains(NAME_FASTA, fasta_index, fasta_file, fastaChain)
 
     # Random chains
     for gen in GENERATION_METHODS:
         fastaChains = generate_chains(CHAINS_PER_TYPE, ALPHABET, gen, MIN_FASTA_LENGTH, MAX_FASTA_LENGTH)
+        generate_sam(sam_file, fastaChain, fastqChains)
         fasta_index += output_chains(NAME_FASTA, fasta_index, fasta_file, fastaChains)
 
     fasta_file.close()
