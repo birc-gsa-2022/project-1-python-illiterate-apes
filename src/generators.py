@@ -34,28 +34,28 @@ def generate_multiple(chainLength, alphabet):
     """
     Returns a string of length='chainLength' made up from random characters from 'alphabet'
     For every character a random float between 0 and 1 is chosen: if it's lower than prob
-    the character is printed n times, where n is a random value between 'minStrike' and 'maxStrike'
+    the character is printed n times, where n is a random value between 'minstreak' and 'maxstreak'
     (included)
     chainLength: Expects an integer > 0 to determine the length of the string output
     alphabet: A Python list containing all valid characters
     prob: A probability between 0 and 1 (0.2)
-    minStrike: The minimum amount of characters that will appear in a strike (3)
-    maxStrike: The maximum amount of characters that will appear in a strike (100)
+    minstreak: The minimum amount of characters that will appear in a streak (3)
+    maxstreak: The maximum amount of characters that will appear in a streak (100)
     """
     prob = 0.2
-    minStrike = 3
-    maxStrike = 100
+    minstreak = 3
+    maxstreak = 100
     output = ""
     for i in range(chainLength):
         selectedChar = random.choice(alphabet)
         if random.random()>=prob:
             output += selectedChar
         else:
-            strikeLength = random.choice(range(minStrike, maxStrike+1))
-            if strikeLength > chainLength-i:
-                strikeLength = i
-            output += "".join(selectedChar for _ in range(strikeLength))
-            i += strikeLength-1
+            streakLength = random.choice(range(minstreak, maxstreak+1))
+            if streakLength > chainLength-i:
+                streakLength = i
+            output += "".join(selectedChar for _ in range(streakLength))
+            i += streakLength-1
     return output
 
 def generate_different(chainLength, alphabet):
