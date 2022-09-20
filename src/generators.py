@@ -157,6 +157,9 @@ def embedString(base, insertion, index):
     return base[:index] + insertion + base[:index+len(insertion)]
 
 def __adapt_chain__(chain, pattern, min_matches, max_matches):
+    if chain == "" or pattern == "":
+        return chain
+
     if len(pattern)*max_matches > len(chain):
         max_matches = len(chain)//len(pattern)
 
