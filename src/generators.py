@@ -1,6 +1,8 @@
 import random
 from unittest.util import _MAX_LENGTH
 
+MISSISSIPPI = True
+
 def generate_random_sequence(chainLength, alphabet):
     """
     Returns a string of length='chainLength' made up from random characters from 'alpabet'
@@ -156,7 +158,7 @@ def generate_sam(file, chain, patterns):
     pass
 
 def generate_test():
-    ALPHABET = ['a', 'c', 'g', 't']
+    ALPHABET = ['m', 'i', 's', 'p']
     GENERATION_METHODS = [generate_random_sequence, generate_same_before, generate_multiple, generate_different, generate_fibonacci]
     CHAINS_PER_TYPE = 5
 
@@ -164,6 +166,9 @@ def generate_test():
     random.seed(0)
 
     fastqChains = []
+    if MISSISSIPPI:
+        fastqChains = ['mississippi']
+    
     if True:
         NAME_FASTQ = "@read"
 
@@ -193,6 +198,10 @@ def generate_test():
     sam_file = open('sam.txt', 'w')
 
     fasta_index = 0
+    if MISSISSIPPI:
+        chain = 'mississippi'
+        generate_sam(sam_file, chain, fastqChains)
+        fasta_index = output_chains(NAME_FASTA, 0, fasta_file, chain)
 
     for i in range(10):
         fastaChain = generate_chains(1, ALPHABET, generate_random_sequence, i, i)[0]
