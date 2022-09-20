@@ -1,5 +1,4 @@
 import random
-from unittest.util import _MAX_LENGTH
 
 MISSISSIPPI = True
 
@@ -108,27 +107,108 @@ def generate_chains(nChains, alphabet, method, minLength, maxLength):
     
     return chains
 
-def find_border(chain):
-    borderPos = 0
-    for c in enumerate(chain[1:]):
-        if c == chain[borderPos]:
-            borderPos += 1
-        elif c == chain[0]:
-             borderPos = 1
+def border_array(x: str) -> list[int]:
+    """
+    Construct the border array for x.
+
+    >>> border_array("aaba")
+    [0, 1, 0, 1]
+    >>> border_array("ississippi")
+    [0, 0, 0, 1, 2, 3, 4, 0, 0, 1]
+    >>> border_array("")
+    []
+    >>> strict_border_array("abaabaa")
+    [0, 0, 1, 1, 2, 3, 4]
+    """
+    if x=="":
+        return []
+    border_list = [0]
+    index_match = 0
+    for c in x[1:]:
+        if c==x[index_match]:
+            index_match += 1
+        elif c==x[0]:
+            index_match = 1
         else:
-            borderPos = 0
-    
-    return borderPos
+            index_match = 0
+        border_list.append(index_match)
+    return border_list
+
+# Returns the border length of the last border in the given string
+def lastBorder(x):
+    border = border_array(x)
+    index = len(border)-1
+    if index<0:
+        return 0
+    else:
+        return border[index]
+
+def findPattern(chain, pattern):
+    patternIndexes = []
+    start = 0
+    while True:
+        start = chain.find(pattern, start) + 1
+        if start > 0:
+            patternIndexes.append(start)
+        else:
+            return patternIndexes
+
+def embedString(base, insertion, index):
+    return base[:index] + insertion + base[:index+len(insertion)]
 
 def __adapt_chain__(chain, pattern, min_matches, max_matches):
-    borderPos = len(pattern)-find_border(pattern)
-
     if len(pattern)*max_matches > len(chain):
         max_matches = len(chain)//len(pattern)
 
     n_matches = randomRange(min_matches, max_matches)
 
+    currentMatches = len(findPattern(pattern, chain))
 
+    if currentMatches < n_matches:
+        # Random probabilities of a match at the beginning and at the end (20% each)
+        beginMatch = random.random() > 0.8
+        if beginMatch:
+            chain[:len(pattern)] = pattern
+            currentMatches = len(findPattern(pattern, chain))
+
+        if currentMatches >= n_matches: return chain
+
+        endMatch = random.random() > 0.8
+        if endMatch:
+            chain[-len(pattern):] = pattern
+            currentMatches = len(findPattern(pattern, chain))
+        
+        if currentMatches >= n_matches: return chain
+
+        # Force having two patterns in the chain with overlapping solutions if possible.
+        # If not, simply put them one after the other.
+        # Chance of this happening on purpose: 20%
+        overlappingMatches = random.random() > 0.8
+        if currentMatches>0 and overlappingMatches:
+            selectedMatch = random.choice(range(currentMatches))
+            borderPos = lastBorder(pattern)
+            indexSelectedMatch = findPattern(pattern, chain)[selectedMatch]
+            # Special case when selecting the last match (we put the pattern before the string instead of after)
+            if selectedMatch == currentMatches-1:
+                # Overlap before the final string
+                positionModification = indexSelectedMatch-len(pattern)*2+borderPos
+                embedString(chain, pattern, positionModification)
+            else:
+                # Overlap after the string
+                positionModification = indexSelectedMatch+len(pattern)+borderPos
+                embedString(chain, pattern, positionModification)
+
+        currentMatches = len(findPattern(pattern, chain))
+        # Chain modification loop
+        rangeIndexes = range(0, 1)
+        if len(chain)-len(pattern) > 0:
+            rangeIndexes = range(len(chain)-len(pattern))
+        while currentMatches < n_matches:
+            randomIndex = random.choice(rangeIndexes)
+            embedString(chain, pattern, randomIndex)
+            currentMatches = len(findPattern(pattern, chain))
+    
+    return chain
 
 
 def adapt_chains(chains, patterns, min_matches, max_matches):
