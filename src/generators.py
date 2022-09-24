@@ -222,10 +222,10 @@ def __adapt_chain__(chain, pattern, min_matches, max_matches):
 
 def adapt_chains(chains, patterns, min_matches, max_matches):
     if isinstance(chains, list):
-        for chain, pattern in chains, patterns:
-            __adapt_chain__(chain, pattern, min_matches, max_matches)
+        for i, chain, pattern in enumerate(chains, patterns):
+            chains[i] = __adapt_chain__(chain, pattern, min_matches, max_matches)
     else:
-        __adapt_chain__(chains, patterns, min_matches, max_matches)
+        chains = __adapt_chain__(chains, patterns, min_matches, max_matches)
     
     return chains
 
