@@ -262,9 +262,10 @@ def generate_sam(file, fasta, fastaName, fastq, fastqNames):
     for i, pattern in enumerate(fastq):
         if pattern == "":
             continue
-        res = fasta.find(pattern)
-        if res != -1:
-            out.append(f'{fastqNames[i].strip()}\t{fastaName.strip()}\t{int(res)+1}\t{len(pattern)}M\t{pattern.strip()}')
+        
+        matches = findPattern(fasta, pattern)
+        for match in matches:
+            out.append(f'{fastqNames[i].strip()}\t{fastaName.strip()}\t{int(match)+1}\t{len(pattern)}M\t{pattern.strip()}')
     
     if out:
         file.write('\n'.join(out)+'\n')
