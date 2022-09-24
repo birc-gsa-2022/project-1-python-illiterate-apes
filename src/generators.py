@@ -315,6 +315,7 @@ def generate_test():
     if MISSISSIPPI:
         chain = 'ississippi'
         nameFasta = output_chains(NAME_FASTA, 0, fasta_file, chain)[0]
+        nameFasta = nameFasta.replace("> ", "")
         generate_sam(sam_file, chain, nameFasta, fastqChains, fastqNames)
         fasta_index = 1
 
@@ -322,6 +323,7 @@ def generate_test():
         fastaChain = generate_chains(1, ALPHABET, generate_random_sequence, i, i)[0]
         fastaChain = adapt_chains(fastaChain, fastqChains[fasta_index], MIN_MATCHES, MAX_MATCHES)
         nameFasta = output_chains(NAME_FASTA, fasta_index, fasta_file, fastaChain)[0]
+        nameFasta = nameFasta.replace("> ", "")
         generate_sam(sam_file, fastaChain, nameFasta, fastqChains, fastqNames)
         fasta_index += 1
 
@@ -331,6 +333,7 @@ def generate_test():
         for fastaChain in fastaChains:
             fastaChain = adapt_chains(fastaChain, fastqChains[fasta_index], MIN_MATCHES, MAX_MATCHES)
             nameFasta = output_chains(NAME_FASTA, fasta_index, fasta_file, fastaChain)[0]
+            nameFasta = nameFasta.replace("> ", "")
             generate_sam(sam_file, fastaChain, nameFasta, fastqChains, fastqNames)
             fasta_index += 1
 
