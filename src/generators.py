@@ -119,19 +119,24 @@ def border_array(x: str) -> list[int]:
     []
     >>> strict_border_array("abaabaa")
     [0, 0, 1, 1, 2, 3, 4]
+    >>> border_array("abcabdabcabc")
+    [0, 0, 0, 1, 2, 0, 1, 2, 3, 4, 5, 3]
     """
     if x=="":
         return []
-    border_list = [0]
-    index_match = 0
-    for c in x[1:]:
-        if c==x[index_match]:
-            index_match += 1
-        elif c==x[0]:
-            index_match = 1
-        else:
-            index_match = 0
-        border_list.append(index_match)
+    border_list = [0 for _ in x]
+    for i, c in enumerate(x):
+        border_index = i
+        while True:
+            if border_index == 0:
+                # border_list[i] = 0 # The list was initialized with zeros
+                break
+            previousBorder = border_list[border_index-1]
+            if c == x[previousBorder]:
+                border_list[i] = previousBorder+1
+                break
+            # We go backwards throughout the border
+            border_index = previousBorder
     return border_list
 
 # Returns the border length of the last border in the given string
