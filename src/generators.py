@@ -159,7 +159,7 @@ def findPattern(chain, pattern):
             return patternIndexes
 
 def embedString(base, insertion, index):
-    return base[:index] + insertion + base[:index+len(insertion)]
+    return base[:index] + insertion + base[index+len(insertion):]
 
 def __adapt_chain__(chain, pattern, min_matches, max_matches):
     if chain == "" or pattern == "":
@@ -211,7 +211,9 @@ def __adapt_chain__(chain, pattern, min_matches, max_matches):
         rangeIndexes = range(0, 1)
         if len(chain)-len(pattern) > 0:
             rangeIndexes = range(len(chain)-len(pattern))
+            print("Hola")
         while currentMatches < n_matches:
+            print(currentMatches)
             randomIndex = random.choice(rangeIndexes)
             embedString(chain, pattern, randomIndex)
             currentMatches = len(findPattern(pattern, chain))
@@ -231,18 +233,20 @@ def adapt_chains(chains, patterns, min_matches, max_matches):
 
 def output_chains(name, startIndex, file, chains):
     if isinstance(chains, list):
+        chainNames = [name+str(i+1+startIndex) for i in range(len(chains))]
         for i, chain in enumerate(chains):
-            file.write(name+str(i+1+startIndex)+'\n')
+            file.write(chainNames[i]+'\n')
             file.write(chain+'\n')
-        return len(chains)
+        return chainNames
     else:
-        file.write(name+str(1+startIndex)+'\n')
+        chainName = name+str(1+startIndex)
+        file.write(chainName+'\n')
         file.write(chains+'\n')
-        return 1
+        return [chainName]
 
 
-def generate_sam(file, chain, patterns):
-    # TODO: generate the sam format. You expect to receive only a chain and a set of patterns in a list. You have to write it on the file using the function 'file.write()'
+def generate_sam(file, fasta, fastaName, fastq, fastqNames):
+    # TODO: generate the sam format. You expect to receive only a fasta (with his name in fastaName) and a set of patterns in a list (fastq). The names of these patterns are into another list called fastqNames. You have to write it on the file using the function 'file.write()'
     pass
 
 def generate_test():
@@ -253,9 +257,10 @@ def generate_test():
     # Set seed
     random.seed(0)
 
+    fastqNames = None
     fastqChains = []
     if MISSISSIPPI:
-        fastqChains = ['mississippi']
+        fastqChains = ['ississippi']
     
     if True:
         NAME_FASTQ = "@read"
@@ -271,7 +276,7 @@ def generate_test():
             fastqChains.extend(generate_chains(CHAINS_PER_TYPE, ALPHABET, gen, MIN_FASTQ_LENGTH, MAX_FASTQ_LENGTH))
 
         fastq_file = open('fastq.txt', 'w')
-        output_chains(NAME_FASTQ, 0, fastq_file, fastqChains)
+        fastqNames = output_chains(NAME_FASTQ, 0, fastq_file, fastqChains)
         fastq_file.close()
 
     NAME_FASTA = "> chr"
@@ -287,21 +292,26 @@ def generate_test():
 
     fasta_index = 0
     if MISSISSIPPI:
-        chain = 'mississippi'
-        generate_sam(sam_file, chain, fastqChains)
-        fasta_index = output_chains(NAME_FASTA, 0, fasta_file, chain)
+        chain = 'ississippi'
+        nameFasta = output_chains(NAME_FASTA, 0, fasta_file, chain)[0]
+        generate_sam(sam_file, chain, nameFasta, fastqChains, fastqNames)
+        fasta_index = 1
 
     for i in range(10):
         fastaChain = generate_chains(1, ALPHABET, generate_random_sequence, i, i)[0]
         fastaChain = adapt_chains(fastaChain, fastqChains[fasta_index], MIN_MATCHES, MAX_MATCHES)
-        generate_sam(sam_file, fastaChain, fastqChains)
-        fasta_index += output_chains(NAME_FASTA, fasta_index, fasta_file, fastaChain)
+        nameFasta = output_chains(NAME_FASTA, fasta_index, fasta_file, fastaChain)[0]
+        generate_sam(sam_file, fastaChain, nameFasta, fastqChains, fastqNames)
+        fasta_index += 1
 
     # Random chains
     for gen in GENERATION_METHODS:
         fastaChains = generate_chains(CHAINS_PER_TYPE, ALPHABET, gen, MIN_FASTA_LENGTH, MAX_FASTA_LENGTH)
-        generate_sam(sam_file, fastaChain, fastqChains)
-        fasta_index += output_chains(NAME_FASTA, fasta_index, fasta_file, fastaChains)
+        for fastaChain in fastaChains:
+            #fastaChain = adapt_chains(fastaChain, fastqChains[fasta_index], MIN_MATCHES, MAX_MATCHES)
+            nameFasta = output_chains(NAME_FASTA, fasta_index, fasta_file, fastaChain)[0]
+            generate_sam(sam_file, fastaChain, nameFasta, fastqChains, fastqNames)
+            fasta_index += 1
 
     fasta_file.close()
 
