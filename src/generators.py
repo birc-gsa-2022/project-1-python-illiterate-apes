@@ -159,7 +159,8 @@ def findPattern(chain, pattern):
             return patternIndexes
 
 def embedString(base, insertion, index):
-    return base[:index] + insertion + base[index+len(insertion):]
+    newChain = base[:index] + insertion + base[index+len(insertion):]
+    return newChain
 
 def __adapt_chain__(chain, pattern, min_matches, max_matches):
     if chain == "" or pattern == "":
@@ -176,14 +177,14 @@ def __adapt_chain__(chain, pattern, min_matches, max_matches):
         # Random probabilities of a match at the beginning and at the end (20% each)
         beginMatch = random.random() > 0.8
         if beginMatch:
-            chain[:len(pattern)] = pattern
+            chain = embedString(chain, pattern, 0)
             currentMatches = len(findPattern(pattern, chain))
 
         if currentMatches >= n_matches: return chain
 
         endMatch = random.random() > 0.8
         if endMatch:
-            chain[-len(pattern):] = pattern
+            chain = embedString(chain, pattern, len(chain)-len(pattern))
             currentMatches = len(findPattern(pattern, chain))
         
         if currentMatches >= n_matches: return chain
@@ -195,28 +196,26 @@ def __adapt_chain__(chain, pattern, min_matches, max_matches):
         if currentMatches>0 and overlappingMatches:
             selectedMatch = random.choice(range(currentMatches))
             borderPos = lastBorder(pattern)
-            indexSelectedMatch = findPattern(pattern, chain)[selectedMatch]
+            indexSelectedMatch = findPattern(chain, pattern)[selectedMatch]
             # Special case when selecting the last match (we put the pattern before the string instead of after)
             if selectedMatch == currentMatches-1:
                 # Overlap before the final string
                 positionModification = indexSelectedMatch-len(pattern)*2+borderPos
-                embedString(chain, pattern, positionModification)
+                chain = embedString(chain, pattern, positionModification)
             else:
                 # Overlap after the string
                 positionModification = indexSelectedMatch+len(pattern)+borderPos
-                embedString(chain, pattern, positionModification)
+                chain = embedString(chain, pattern, positionModification)
 
-        currentMatches = len(findPattern(pattern, chain))
+        currentMatches = len(findPattern(chain, pattern))
         # Chain modification loop
         rangeIndexes = range(0, 1)
         if len(chain)-len(pattern) > 0:
             rangeIndexes = range(len(chain)-len(pattern))
-            print("Hola")
         while currentMatches < n_matches:
-            print(currentMatches)
             randomIndex = random.choice(rangeIndexes)
-            embedString(chain, pattern, randomIndex)
-            currentMatches = len(findPattern(pattern, chain))
+            chain = embedString(chain, pattern, randomIndex)
+            currentMatches = len(findPattern(chain, pattern))
     
     return chain
 
@@ -308,7 +307,7 @@ def generate_test():
     for gen in GENERATION_METHODS:
         fastaChains = generate_chains(CHAINS_PER_TYPE, ALPHABET, gen, MIN_FASTA_LENGTH, MAX_FASTA_LENGTH)
         for fastaChain in fastaChains:
-            #fastaChain = adapt_chains(fastaChain, fastqChains[fasta_index], MIN_MATCHES, MAX_MATCHES)
+            fastaChain = adapt_chains(fastaChain, fastqChains[fasta_index], MIN_MATCHES, MAX_MATCHES)
             nameFasta = output_chains(NAME_FASTA, fasta_index, fasta_file, fastaChain)[0]
             generate_sam(sam_file, fastaChain, nameFasta, fastqChains, fastqNames)
             fasta_index += 1
