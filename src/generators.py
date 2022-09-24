@@ -245,8 +245,25 @@ def output_chains(name, startIndex, file, chains):
 
 
 def generate_sam(file, fasta, fastaName, fastq, fastqNames):
-    # TODO: generate the sam format. You expect to receive only a fasta (with his name in fastaName) and a set of patterns in a list (fastq). The names of these patterns are into another list called fastqNames. You have to write it on the file using the function 'file.write()'
-    pass
+    """
+    Finds patterns in chromosome using a ground-truth algorithm (Python function)
+
+    Args:
+        file (fileIO): The file to append the results to in simple-sam format
+        fasta (str): Chromosome to be searched
+        fastaName (str): Name of Chromosome
+        fastq (list[str]): Patterns to look for in Chromosome
+        fastqNames (list[str]): Names of patterns
+    """
+    out = []
+
+    for i in range(len(fastq)):
+        res = fasta.find(fastq[i])
+        if res != -1:
+            out.append(f'{fastqNames[i].strip()}\t{fastaName.strip()}\t{int(res)+1}\t{len(fastq[i])}M\t{fastq[i].strip()}')
+    
+    file.write('\n'.join(out)+'\n')
+
 
 def generate_test():
     ALPHABET = ['m', 'i', 's', 'p']
