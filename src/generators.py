@@ -255,14 +255,19 @@ def generate_sam(file, fasta, fastaName, fastq, fastqNames):
         fastq (list[str]): Patterns to look for in Chromosome
         fastqNames (list[str]): Names of patterns
     """
+    if fasta == "":
+        return
     out = []
 
-    for i in range(len(fastq)):
-        res = fasta.find(fastq[i])
+    for i, pattern in enumerate(fastq):
+        if pattern == "":
+            continue
+        res = fasta.find(pattern)
         if res != -1:
-            out.append(f'{fastqNames[i].strip()}\t{fastaName.strip()}\t{int(res)+1}\t{len(fastq[i])}M\t{fastq[i].strip()}')
+            out.append(f'{fastqNames[i].strip()}\t{fastaName.strip()}\t{int(res)+1}\t{len(pattern)}M\t{pattern.strip()}')
     
-    file.write('\n'.join(out)+'\n')
+    if out:
+        file.write('\n'.join(out)+'\n')
 
 
 def generate_test():
