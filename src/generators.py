@@ -124,19 +124,18 @@ def border_array(x: str) -> list[int]:
     """
     if x=="":
         return []
-    border_list = [0 for _ in x]
+    border_list = [0] * len(x)
     for i, c in enumerate(x):
-        border_index = i
         while True:
-            if border_index == 0:
+            if i == 0:
                 # border_list[i] = 0 # The list was initialized with zeros
                 break
-            previousBorder = border_list[border_index-1]
+            previousBorder = border_list[i-1]
             if c == x[previousBorder]:
                 border_list[i] = previousBorder+1
                 break
             # We go backwards throughout the border
-            border_index = previousBorder
+            i = previousBorder
     return border_list
 
 # Returns the border length of the last border in the given string
@@ -162,7 +161,7 @@ def embedString(base, insertion, index):
     newChain = base[:index] + insertion + base[index+len(insertion):]
     return newChain
 
-def __adapt_chain__(chain, pattern, min_matches, max_matches):
+def adapt_chain(chain, pattern, min_matches, max_matches):
     if chain == "" or pattern == "":
         return chain
 
@@ -223,9 +222,9 @@ def __adapt_chain__(chain, pattern, min_matches, max_matches):
 def adapt_chains(chains, patterns, min_matches, max_matches):
     if isinstance(chains, list):
         for i, chain, pattern in enumerate(chains, patterns):
-            chains[i] = __adapt_chain__(chain, pattern, min_matches, max_matches)
+            chains[i] = adapt_chain(chain, pattern, min_matches, max_matches)
     else:
-        chains = __adapt_chain__(chains, patterns, min_matches, max_matches)
+        chains = adapt_chain(chains, patterns, min_matches, max_matches)
     
     return chains
 

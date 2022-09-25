@@ -3,26 +3,27 @@
 import argparse
 import fasta
 import fastq
+from generators import border_array
 
-def border_array(x: str) -> list[int]:
-    """
-    Construct the border array for x.
+# def border_array(x: str) -> list[int]:
+#     """
+#     Construct the border array for x.
 
-    >>> border_array("aaba")
-    [0, 1, 0, 1]
-    >>> border_array("ississippi")
-    [0, 0, 0, 1, 2, 3, 4, 0, 0, 1]
-    >>> border_array("")
-    []
-    """
-    ba = [0] * len(x)
-    for i in range(len(x)):
-        if i == 0:
-            continue
-        if x[ba[i-1]] == x[i]:
-            ba[i] = ba[i-1] + 1
+#     >>> border_array("aaba")
+#     [0, 1, 0, 1]
+#     >>> border_array("ississippi")
+#     [0, 0, 0, 1, 2, 3, 4, 0, 0, 1]
+#     >>> border_array("")
+#     []
+#     """
+#     ba = [0] * len(x)
+#     for i in range(len(x)):
+#         if i == 0:
+#             continue
+#         if x[ba[i-1]] == x[i]:
+#             ba[i] = ba[i-1] + 1
 
-    return ba
+#     return ba
 
 def linear(read, genome):
     ba = border_array(read[1])
@@ -59,6 +60,7 @@ def main():
     result = []
     for r in reads: 
         for g in genomes:
+            print(linear(r,g))
             result.append(linear(r, g))
     
     for list in result:

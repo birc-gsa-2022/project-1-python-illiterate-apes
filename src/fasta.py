@@ -1,7 +1,7 @@
 def fasta_parse(file):
     out = []
     for l in file:
-        if l and l[0] == ">":
+        if l.startswith(">"):
             trimmed = l[1:].strip()
             out.append([trimmed, ""])
         else:
