@@ -296,7 +296,7 @@ def generate_test():
         for gen in GENERATION_METHODS:
             fastqChains.extend(generate_chains(CHAINS_PER_TYPE, ALPHABET, gen, MIN_FASTQ_LENGTH, MAX_FASTQ_LENGTH))
 
-        fastq_file = open('fastq.txt', 'w')
+        fastq_file = open('fastq.fq', 'w')
         fastqNames = output_chains(NAME_FASTQ, 0, fastq_file, fastqChains)
         fastq_file.close()
 
@@ -308,8 +308,8 @@ def generate_test():
     MIN_MATCHES = 0
     MAX_MATCHES = 10
 
-    fasta_file = open('fasta.txt', 'w')
-    sam_file = open('sam.txt', 'w')
+    fasta_file = open('fasta.fa', 'w')
+    sam_file = open('sam.sam', 'w')
 
     fasta_index = 0
     if MISSISSIPPI:
