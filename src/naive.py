@@ -34,12 +34,9 @@ def main():
     result = []
     for r in reads: 
         for g in genomes:
-            result.append(naive(r, g))
-    
-    for list in result:
-        for line in list:
-            if (line):
-                print(line)
+            out = naive(r, g)
+            for o in out:
+                print(o)
     
 
 

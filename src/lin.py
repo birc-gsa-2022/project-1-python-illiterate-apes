@@ -60,13 +60,10 @@ def main():
     result = []
     for r in reads: 
         for g in genomes:
-            print(linear(r,g))
-            result.append(linear(r, g))
-    
-    for list in result:
-        for line in list:
-            if (line):
-                print(line)
+            out = linear(r,g)
+            for o in out:
+                print(o)
+            #print(linear(r,g))
     
 
 
