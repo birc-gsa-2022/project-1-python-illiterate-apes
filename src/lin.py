@@ -60,7 +60,6 @@ def main():
     genomes = fasta.fasta_parse(args.genome)
     reads = fastq.fastq_parser(args.reads)
 
-    result = []
     for r in reads: 
         for g in genomes:
             out = linear(r,g)
