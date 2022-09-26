@@ -287,7 +287,7 @@ def generate_test():
         fastqChains = ['iss']
     
     if True:
-        NAME_FASTQ = "read"
+        NAME_FASTQ = "@read"
 
         MIN_FASTQ_LENGTH = 3
         MAX_FASTQ_LENGTH = 200
@@ -303,7 +303,7 @@ def generate_test():
         fastqNames = output_chains(NAME_FASTQ, 0, fastq_file, fastqChains)
         fastq_file.close()
 
-    NAME_FASTA = "chr"
+    NAME_FASTA = "> chr"
 
     MIN_FASTA_LENGTH = 2*10**3
     MAX_FASTA_LENGTH = 10**4
@@ -340,6 +340,8 @@ def generate_test():
     
     fasta_file.close()
     sam_file = open('sam.sam', 'w')
+    fastqNames = [item.replace("@", "") for item in fastqNames]
+    nameFastas = [item.replace("> ", "") for item in nameFastas]
     generate_sam(sam_file, fastas, nameFastas, fastqChains, fastqNames)
     sam_file.close()
 
