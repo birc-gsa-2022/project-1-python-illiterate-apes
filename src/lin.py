@@ -32,7 +32,7 @@ def linear(read, genome):
     n = len(genome[1])
     m = len(read[1])
     out = []
-    if read=="" or genome == "":
+    if read[1] == "" or genome[1] == "":
         return out
     while (j < n):
         while i < m and j < n and genome[1][j] == read[1][i]:

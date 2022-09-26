@@ -243,14 +243,14 @@ def output_chains(name, startIndex, file, chains):
         return [chainName]
 
 
-def generate_sam(file, fasta, fastaName, fastq, fastqNames):
+def generate_sam(file, fasta, fastaNames, fastq, fastqNames):
     """
     Finds patterns in chromosome using a ground-truth algorithm (Python function)
 
     Args:
         file (fileIO): The file to append the results to in simple-sam format
-        fasta (str): Chromosome to be searched
-        fastaName (str): Name of Chromosome
+        fasta (list[str]): Chromosomes to be searched
+        fastaName (list[str]): Names of Chromosome
         fastq (list[str]): Patterns to look for in Chromosome
         fastqNames (list[str]): Names of patterns
     """
@@ -261,10 +261,13 @@ def generate_sam(file, fasta, fastaName, fastq, fastqNames):
     for i, pattern in enumerate(fastq):
         if pattern == "":
             continue
-        
-        matches = findPattern(fasta, pattern)
-        for match in matches:
-            out.append(f'{fastqNames[i].strip()}\t{fastaName.strip()}\t{int(match)+1}\t{len(pattern)}M\t{pattern.strip()}')
+        for j, chain in enumerate(fasta):
+            if chain == "":
+                continue
+            
+            matches = findPattern(chain, pattern)
+            for match in matches:
+                out.append(f'{fastqNames[i].strip()}\t{fastaNames[j].strip()}\t{int(match)}\t{len(pattern)}M\t{pattern.strip()}')
     
     if out:
         file.write('\n'.join(out)+'\n')
@@ -281,7 +284,7 @@ def generate_test():
     fastqNames = None
     fastqChains = []
     if MISSISSIPPI:
-        fastqChains = ['ississippi']
+        fastqChains = ['iss']
     
     if True:
         NAME_FASTQ = "read"
@@ -309,20 +312,21 @@ def generate_test():
     MAX_MATCHES = 10
 
     fasta_file = open('fasta.fa', 'w')
-    sam_file = open('sam.sam', 'w')
 
     fasta_index = 0
+    fastas = []
+    nameFastas = []
     if MISSISSIPPI:
-        chain = 'ississippi'
-        nameFasta = output_chains(NAME_FASTA, 0, fasta_file, chain)[0]
-        generate_sam(sam_file, chain, nameFasta, fastqChains, fastqNames)
+        chain = 'mississippi'
+        fastas.append(chain)
+        nameFastas.append(output_chains(NAME_FASTA, 0, fasta_file, chain)[0])
         fasta_index = 1
 
     for i in range(10):
         fastaChain = generate_chains(1, ALPHABET, generate_random_sequence, i, i)[0]
         fastaChain = adapt_chains(fastaChain, fastqChains[fasta_index], MIN_MATCHES, MAX_MATCHES)
-        nameFasta = output_chains(NAME_FASTA, fasta_index, fasta_file, fastaChain)[0]
-        generate_sam(sam_file, fastaChain, nameFasta, fastqChains, fastqNames)
+        fastas.append(fastaChain)
+        nameFastas.append(output_chains(NAME_FASTA, fasta_index, fasta_file, fastaChain)[0])
         fasta_index += 1
 
     # Random chains
@@ -330,11 +334,14 @@ def generate_test():
         fastaChains = generate_chains(CHAINS_PER_TYPE, ALPHABET, gen, MIN_FASTA_LENGTH, MAX_FASTA_LENGTH)
         for fastaChain in fastaChains:
             fastaChain = adapt_chains(fastaChain, fastqChains[fasta_index], MIN_MATCHES, MAX_MATCHES)
-            nameFasta = output_chains(NAME_FASTA, fasta_index, fasta_file, fastaChain)[0]
-            generate_sam(sam_file, fastaChain, nameFasta, fastqChains, fastqNames)
+            fastas.append(fastaChain)
+            nameFastas.append(output_chains(NAME_FASTA, fasta_index, fasta_file, fastaChain)[0])
             fasta_index += 1
-
+    
     fasta_file.close()
+    sam_file = open('sam.sam', 'w')
+    generate_sam(sam_file, fastas, nameFastas, fastqChains, fastqNames)
+    sam_file.close()
 
 def main():
     generate_test()
