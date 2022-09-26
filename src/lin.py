@@ -32,12 +32,14 @@ def linear(read, genome):
     n = len(genome[1])
     m = len(read[1])
     out = []
+    if read=="" or genome == "":
+        return out
     while (j < n):
         while i < m and j < n and genome[1][j] == read[1][i]:
             j += 1
             i += 1
 
-        if i == m and j-m+1 != 0:
+        if i == m:
             out.append(f"{read[0]}\t{genome[0]}\t{j - m + 1}\t{m}M\t{read[1]}")
 
         if i == 0:
