@@ -92,7 +92,21 @@ Once you have implemented the tools, fill out the report below.
 
 ### Experiments that verifies the correctness of your implementations.
 
-*Describe this here.*
+In order to verify that both the naïve and the linear algorithm work as intended, we decided to generate a test with the solutions that tries both regular and extreme situations. The test tries the following cases:
+
+* Short patterns and genomes (chains), with length going from 0 to 10 characters (selected randomly)
+* Random chains
+* Random chains, having a chance of repeating the previous character
+* Random chains, having a chance of having a long sequence made up by a single character
+* Random chains, where a character cannot appear consecutively two or more times.
+* Fibonacci chains, made up by two different characters being concatenated following a Fibonacci distribution
+
+All of these genomes (except the short ones) have a length between 2.000 and 10.000 characters, whilst the patters length varies between 3 and 200. Moreover, for each pair of chains the genome is adapted, forcing to include the pattern a random number of times between 0 and 10 (if the randomness have made up more). The inclusion of this patterns has a high probability of having four extreme situations:
+
+* Pattern matching at the beginning of the genome
+* Pattern matching at the end of the genoms
+* Two pattern matchings next to each other
+* Two pattern matchings overlapping one with each other
 
 ### Experiments validating the running time.
 
