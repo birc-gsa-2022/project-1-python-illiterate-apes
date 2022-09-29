@@ -37,7 +37,7 @@ def main():
     runtimes = calculateRuntimesCombined(reads, genomes, "naive")
     x = np.array([i for i in range(len(runtimes))])
     y = np.array([i[2] for i in runtimes])
-    plotLinearRegressionRuntime(x,y, 2, "naive alg runtime variance according to variance in genome and read length - Best Case")
+    plotLinearRegressionRuntime(x,y, 1, "naive alg runtime variance according to variance in genome and read length - Best Case")
     
 
     #LINEAR

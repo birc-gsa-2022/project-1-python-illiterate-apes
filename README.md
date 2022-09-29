@@ -111,18 +111,29 @@ All of these genomes (except the short ones) have a length between 2.000 and 10.
 
 ### Experiments validating the running time.
 
-For this section, you should address the following:
+For both implementations of the naive and linear algorithm a polynomial regression was fitted to the runtime experiments results. For each graph only one variable (string being searched upon and pattern being searched for) length increased while the other remained the same, with the exception of the graphs where both increase at the same time. All the graphs were plotted two for each algorithm type, with each time the difference being worst or best case input.
 
-- An experiment that verifies that your implementation of `naive` uses no more time than O(nm) to find all occurrences of a given pattern in a text. Remember to explain your choice of test data. What are “best” and “worst” case inputs?
+Naive input choice for worst case was a pattern of only "a"s and the a string of only "a"s aswell, as this means that the algorithm will always have to check every character in the string against every character in the pattern.
+![](figs/naivereadworst.png)
+![](figs/naivegenomeworst.png)
+![](figs/naivegenomereadworst.png)
+For the naive with worst case input, when only increasing one of the variables the increase is linear, this is according to expectations of the algorithm having O(nm) with worst case inputs. And in the visualization with both increasing the polynomial regression is quadratic, which proves that for the worst case inputs and consequently all other inputs, that the naive algorithm implementation uses no more time than O(nm).
 
-- An experiment that verifies that your implementations of `lin` use no more time than O(n+m) to find all occurrences of a given pattern in a text. Remember to explain your choice of test data. What are “best” and “worst” case inputs?
+Naive input choice for best case was a pattern of only "a"s and the a string of only "b"s, as this means that the algorithm will always check every character in the string against only the first character in the pattern, making it O(n).
+![](figs/naivereadbest.png)
+![](figs/naivegenomebest.png)
+![](figs/naivegenomereadbest.png)
+For the naive with best case input, when only increasing the string length the increase is linear, this is according to expectations of the algorithm having O(n) with best case inputs. When increasing only the pattern length there is a decrease in runtime, however the pattern length should not affect the runtime, this might be cause simply because of noisy data (due to background processes running in the laptop where the tests were run, memory allocation, etc.) and the sample of data not being big enough. And in the visualization with both increasing the polynomial regression is linear, which proves that for the best case inputs the naive algorithm implementation uses O(n).
 
-You can insert pictures here like this:
 
-```
-![](path/to/fig)
-```
+Linear input choice for worst case was a pattern of only "a"s * n and a string with a reoccurring subtstring equal to "a"s * n-1 followed by a different character such as b, as this means that the algorithm will check every character, and when it finds the mismatch it will check that character against the pattern m times (against every character in the pattern).
+![](figs/linearreadworst.png)
+![](figs/lineargenomeworst.png)
+![](figs/lineargenomereadworst.png)
+For the naive with worst case input, when only increasing one of the variables the increase is linear, this is according to expectations of the algorithm having O(n+m) with worst case inputs, the only difference from naive being the slope of the regression being smaller. And in the visualization with both increasing the increase is also linear, with a bigger slope, which proves that for the worst case inputs and consequently all other inputs, that the naive algorithm implementation uses no more time than O(n+m).
 
-I am not ready to share my own results yet, so I will just show you a fast scooter.
-
-![](figs/scooter.jpg)
+Linear input choice for best case was the pattern "ababa" and a string "ababaabcabacacb", as this means that the algorithm will skip checking some characters in the string because of the use of the border array, so when it finds the mismatch it may skip characters in the string depending where the mismatch occurred.
+![](figs/linearreadbest.png)
+![](figs/lineargenomebest.png)
+![](figs/lineargenomereadbest.png)
+For the naive with worst case input, when only increasing the read the regression is constant, this is due to outliers which might be caused by memory allocation that only happens for the first test. And in the visualization with both increasing the increase is also linear.
