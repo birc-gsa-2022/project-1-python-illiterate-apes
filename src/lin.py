@@ -31,23 +31,21 @@ def linear(read, genome):
     j = 0
     n = len(genome[1])
     m = len(read[1])
-    out = []
     if read[1] == "" or genome[1] == "":
-        return out
+        return
+    
     while (j < n):
         while i < m and j < n and genome[1][j] == read[1][i]:
             j += 1
             i += 1
 
         if i == m:
-            out.append(f"{read[0]}\t{genome[0]}\t{j - m + 1}\t{m}M\t{read[1]}")
+            print(f"{read[0]}\t{genome[0]}\t{j - m + 1}\t{m}M\t{read[1]}")
 
         if i == 0:
             j += 1
         else:
             i = ba[i - 1]
-    
-    return out
 
 
 
@@ -60,13 +58,9 @@ def main():
     genomes = fasta.fasta_parse(args.genome)
     reads = fastq.fastq_parser(args.reads)
 
-    result = []
     for r in reads: 
         for g in genomes:
             out = linear(r,g)
-            for o in out:
-                print(o)
-            #print(linear(r,g))
     
 
 

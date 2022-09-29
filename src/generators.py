@@ -124,19 +124,13 @@ def border_array(x: str) -> list[int]:
     """
     if x=="":
         return []
-    border_list = [0] * len(x)
-    for i, c in enumerate(x):
-        while True:
-            if i == 0:
-                # border_list[i] = 0 # The list was initialized with zeros
-                break
-            previousBorder = border_list[i-1]
-            if c == x[previousBorder]:
-                border_list[i] = previousBorder+1
-                break
-            # We go backwards throughout the border
-            i = previousBorder
-    return border_list
+    ba = [0] * len(x)
+    for j in range(1, len(x)):
+        b = ba[j - 1]
+        while b > 0 and x[j] != x[b]:
+            b = ba[b - 1]
+        ba[j] = b + 1 if x[j] == x[b] else 0
+    return ba
 
 # Returns the border length of the last border in the given string
 def lastBorder(x):
